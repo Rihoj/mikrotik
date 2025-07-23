@@ -64,6 +64,42 @@ variable "dns_servers" {
   default     = ["8.8.8.8", "1.1.1.1"]
 }
 
+variable "wifi_subnet" {
+  description = "Wi-Fi network subnet"
+  type        = string
+  default     = "192.168.2.0/24"
+}
+
+variable "wifi_gateway" {
+  description = "Wi-Fi gateway IP address"
+  type        = string
+  default     = "192.168.2.1/24"
+}
+
+variable "servers_subnet" {
+  description = "Servers network subnet"
+  type        = string
+  default     = "192.168.3.0/24"
+}
+
+variable "servers_gateway" {
+  description = "Servers gateway IP address"
+  type        = string
+  default     = "192.168.3.1/24"
+}
+
+variable "servers_dhcp_pool_start" {
+  description = "Servers DHCP pool starting IP address"
+  type        = string
+  default     = "192.168.3.50"
+}
+
+variable "servers_dhcp_pool_end" {
+  description = "Servers DHCP pool ending IP address"
+  type        = string
+  default     = "192.168.3.200"
+}
+
 # ==============================================
 # DHCP Configuration Variables
 # ==============================================

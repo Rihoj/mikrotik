@@ -4,7 +4,7 @@
 
 # Set static IP on ether1
 resource "routeros_ip_address" "mgmt" {
-  address   = "192.168.88.254/24" # Customize as needed
+  address   = var.management_ip
   interface = routeros_interface_ethernet.ether1.name
   comment   = "Management interface IP"
 }
@@ -22,15 +22,17 @@ resource "routeros_interface_ethernet" "ether1" {
 
 # 1. Accept all traffic *from* mgmt subnet via ether1
 resource "routeros_ip_firewall_filter" "allow_mgmt_in" {
+  count        = var.enable_management_firewall ? 1 : 0
   chain        = "input"
   action       = "accept"
-  src_address  = "192.168.88.0/24" # Or specific IP, e.g. 192.168.88.10
+  src_address  = var.management_subnet
   in_interface = routeros_interface_ethernet.ether1.name
   comment      = "Allow management subnet access via ether1"
 }
 
 # 2. Accept all traffic to router sourced from ether1 (hard fail-safe)
 resource "routeros_ip_firewall_filter" "allow_mgmt_interface_all" {
+  count        = var.enable_management_firewall ? 1 : 0
   chain        = "input"
   action       = "accept"
   in_interface = routeros_interface_ethernet.ether1.name
@@ -41,6 +43,7 @@ resource "routeros_ip_firewall_filter" "allow_mgmt_interface_all" {
 # 3. OPTIONAL: Add a rule that drops everything else at the bottom
 # Only use this if you are sure mgmt rules are above it!
 resource "routeros_ip_firewall_filter" "drop_all_else" {
+  count    = var.enable_management_firewall ? 1 : 0
   chain    = "input"
   action   = "drop"
   comment  = "Drop all other input traffic (keep this last!)"
@@ -48,6 +51,7 @@ resource "routeros_ip_firewall_filter" "drop_all_else" {
 }
 
 resource "routeros_ip_firewall_filter" "allow_ssh_winbox" {
+  count        = var.enable_management_firewall ? 1 : 0
   chain        = "input"
   action       = "accept"
   in_interface = routeros_interface_ethernet.ether1.name

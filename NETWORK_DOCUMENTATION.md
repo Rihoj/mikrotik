@@ -2,10 +2,13 @@
 
 ## Network Overview
 - **Single Bridge Architecture**: All devices connect to one unified bridge (`bridge_lan`)
-- **Network Subnet**: 192.168.1.0/24
+- **Network Subnets**: 
+  - Management: 192.168.88.0/24 (ether1)
+  - LAN: 192.168.1.0/24 (bridge_lan)
 - **Gateway**: 192.168.1.1
 - **DHCP Range**: 192.168.1.50-200 (Static leases: 192.168.1.1-49)
-- **IoT Architecture**: All IoT/SmartHome devices connect via WiFi (no dedicated IoT controller)
+- **WiFi Management**: Optional CAPsMAN for centralized AP control
+- **Inter-subnet Routing**: Configured between management and LAN networks
 
 ## Port Assignments
 
@@ -57,6 +60,8 @@ Static IP assignments are configured for key infrastructure devices to ensure co
 - WAN firewall rules (drop unsolicited connections)
 - Established/related connection tracking
 - NAT masquerading for internet access
+- Inter-subnet routing with controlled access between management and LAN networks
+- Management network isolation from WAN
 
 ## Configuration Notes
 1. **MAC Addresses**: Some placeholder MAC addresses (00:00:00:00:00:XX) remain in DHCP static leases and should be updated with actual device MAC addresses
@@ -72,3 +77,18 @@ Static IP assignments are configured for key infrastructure devices to ensure co
 - **Management Interface**: ether1 (192.168.88.254/24)
 - **SSH/WinBox**: Allowed on management interface
 - **Web Access**: Available through management interface or LAN bridge IP (192.168.1.1)
+
+## WiFi Management (Optional CAPsMAN)
+When `enable_capsman = true` in configuration:
+- **CAPsMAN Controller**: Runs on the router for centralized AP management
+- **Default SSID**: Configurable via `wifi_ssid` variable
+- **Security**: WPA2-PSK with AES-CCM encryption
+- **Auto-Provisioning**: Automatically configures connected CAPs
+- **Country**: Set to "US" with appropriate channel restrictions
+
+## Inter-Subnet Routing
+The configuration includes routing between management and LAN networks:
+- **Management → LAN**: Full access allowed
+- **LAN → Management**: Controlled access allowed  
+- **Internet → Management**: Blocked (security)
+- **Default Gateway**: 192.168.1.1 for management network
